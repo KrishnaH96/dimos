@@ -24,7 +24,13 @@ except ImportError:
     CACHE_DIR = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "dimos"
 else:
     CONFIG_DIR = Path(GLib.get_user_config_dir())
-    STATE_DIR = Path(GLib.get_user_state_dir()) / "dimos"
+    get_user_state_dir = getattr(GLib, "get_user_state_dir", None)
+    state_dir = (
+        get_user_state_dir()
+        if get_user_state_dir is not None
+        else os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")
+    )
+    STATE_DIR = Path(state_dir) / "dimos"
     CACHE_DIR = Path(GLib.get_user_cache_dir()) / "dimos"
 
 DIMOS_PROJECT_ROOT = Path(__file__).parent.parent
